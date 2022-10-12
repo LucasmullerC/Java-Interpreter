@@ -28,6 +28,10 @@ public class Interpreter {
         return tokens.get(tokenIt + n);
     }
 
+    public Token lookBehind(int n) {
+        return tokens.get(tokenIt - n);
+    }
+
     public boolean match(TokenTypes tipo) {
         return look.tipo == tipo;
     }
@@ -478,9 +482,14 @@ public class Interpreter {
             } else if (match(TokenTypes.IDENTIFICADOR)) {
                 if (lookAhead(1).tipo == TokenTypes.ASPAS) {
                     error("print mal formado");
+                } else if (lookAhead(1).tipo == TokenTypes.STRLEN) {
+                    nextTk();
+                    var = var + strlen(false);
+                    // nextTk();
+                } else {
+                    var = lista.find(look.lexema, bloco).getString();
+                    nextTk();
                 }
-                var = lista.find(look.lexema, bloco).getString();
-                nextTk();
             } else if (match(TokenTypes.STRLEN)) {
                 var = var + strlen(false);
                 // nextTk();
@@ -504,30 +513,28 @@ public class Interpreter {
     }
 
     public double strlen(boolean pv) {
-        double sizeValue = 0;
+        System.out.println(lookBehind(1).lexema);
+        double sizeValue = lista.find(lookBehind(1).lexema, bloco).getArraySize();
         nextTk();
         if (match(TokenTypes.ABRE_PARENTESES)) {
             nextTk();
-            if (match(TokenTypes.IDENTIFICADOR)) {
-                sizeValue = lista.find(look.lexema, bloco).getArraySize();
+            if (match(TokenTypes.FECHA_PARENTESES)) {
                 nextTk();
-                if (match(TokenTypes.FECHA_PARENTESES)) {
-                    nextTk();
-                    if (pv) {
-                        if (match(TokenTypes.PONTO_VIRGULA)) {
-                            nextTk();
-                            return sizeValue;
-                        } else {
-                            error("falta de ponto virgula");
-                        }
-                    } else {
-                        // nextTk();
+                if (pv) {
+                    if (match(TokenTypes.PONTO_VIRGULA)) {
+                        nextTk();
                         return sizeValue;
+                    } else {
+                        error("falta de ponto virgula");
                     }
                 } else {
-                    error("não fechou parenteses do print");
+                    // nextTk();
+                    return sizeValue;
                 }
+            } else {
+                error("não fechou parenteses do print");
             }
+
         } else {
             error("não abriu parenteses no print");
         }

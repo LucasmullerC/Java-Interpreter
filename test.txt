@@ -16,6 +16,7 @@ public static void main(String[] args){
 	y = 200;
 	System.out.print(y);
 	System.out.print(c);
+	System.out.print(c.lenght());
 	c[] = "c string";
 	while (x <= 7 && b != 2) {
 		System.out.print(x);
