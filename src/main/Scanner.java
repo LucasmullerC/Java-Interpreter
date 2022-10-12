@@ -17,7 +17,17 @@ public class Scanner {
 
     static {
         PALRESERVADAS = new HashMap<>();
-        // Adicionar palavras reservadas de acordo com os tokens
+        PALRESERVADAS.put("public static void main(String[] args)", TokenTypes.MAIN_ID);
+        PALRESERVADAS.put("if", TokenTypes.IF_ID);
+        PALRESERVADAS.put("else", TokenTypes.ELSE_ID);
+        PALRESERVADAS.put("while", TokenTypes.WHILE_ID);
+        PALRESERVADAS.put("do", TokenTypes.DO_ID);
+        PALRESERVADAS.put("for", TokenTypes.FOR_ID);
+        PALRESERVADAS.put("int", TokenTypes.INT_ID);
+        PALRESERVADAS.put("float", TokenTypes.FLOAT_ID);
+        PALRESERVADAS.put("char", TokenTypes.CHAR_ID);
+        PALRESERVADAS.put(".lenght", TokenTypes.STRLEN);
+        PALRESERVADAS.put("System.out.print", TokenTypes.PRINT);
     }
 
     public Scanner(String source) {
@@ -100,22 +110,64 @@ public class Scanner {
         return isLetter(c) || c == '_';
     }
 
-    private void identifier() {
+    private void identifier(char c) {
         while (isAlphaNumeric(lookAhead())) {
             advance();
         }
 
         String text = source.substring(comeco, atual);
 
+        if (text.equals("public")) {
+            text = "";
+            while (isMain(lookAhead())) {
+                advance();
+            }
+            if (!source.substring(comeco, atual).equals(text)) {
+                text += source.substring(comeco, atual);
+            }
+        } else if (text.equals("System")) {
+            text = "";
+            while (isSout(lookAhead())) {
+                advance();
+            }
+            if (!source.substring(comeco, atual).equals(text)) {
+                text += source.substring(comeco, atual);
+            }
+        }
         TokenTypes type = PALRESERVADAS.get(text);
         if (type == null) {
-            type = TokenTypes.IDENTIFICADOR;
+            if (isDigit(c) || c == '.') {
+                number(c);
+            } else if (isAlpha(c)) {
+                type = TokenTypes.IDENTIFICADOR;
+            }
         }
         addToken(type);
     }
 
     private boolean isAlphaNumeric(char c) {
         return isAlpha(c) || isDigit(c);
+    }
+
+    private boolean isSout(char c) {
+        return isAlpha(c) || isDigit(c) || isDot(c);
+    }
+
+    private boolean isMain(char c) {
+        if (isAlpha(c) || isDigit(c) || c == '(' || c == ')' || c == '[' || c == ']' || c == ' ') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private boolean isDot(char c) {
+        if (c == '.') {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     private void scanToken() {
@@ -234,10 +286,8 @@ public class Scanner {
                 character(source.charAt(comeco + 1));
                 break;
             default:
-                if (isDigit(c) || c == '.') {
-                    number(c);
-                } else if (isAlpha(c)) {
-                    identifier();
+                if (isAlpha(c) || isDigit(c) || c == '.') {
+                    identifier(c);
                 } else {
                     System.out
                             .println("ERRO: Caracter Inválido(" + c + ") na linha: " + linha + " e coluna: " + coluna);
