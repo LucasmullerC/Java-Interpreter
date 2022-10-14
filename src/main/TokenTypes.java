@@ -1,7 +1,15 @@
 package main;
 
 public enum TokenTypes {
-
+    MAIN_ID(1),
+    IF_ID(2),
+    ELSE_ID(3),
+    WHILE_ID(4),
+    DO_ID(5),
+    FOR_ID(6),
+    INT_ID(7),
+    FLOAT_ID(8),
+    CHAR_ID(9),
     IDENTIFICADOR(10),
     DIFERENTE(11),
     MENOR_IGUAL(12),
@@ -23,13 +31,14 @@ public enum TokenTypes {
     EOF(28),
     INT(29),
     FLOAT(30),
-    CHAR(31),
-    ASPAS(32),
-    ABRE_COLCHETE(33),
-    FECHA_COLCHETE(34),
+    PRINT(31),
+    CHAR(32),
+    ASPAS(33),
+    ABRE_COLCHETE(34),
+    FECHA_COLCHETE(35),
     AND(36),
-    OR(37);
-    // falta adicionar main,if,else...etc
+    OR(37),
+    STRLEN(38);
 
     public final int valor;
 
